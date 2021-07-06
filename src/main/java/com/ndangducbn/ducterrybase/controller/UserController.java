@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/users/")
@@ -69,6 +70,19 @@ public class UserController {
     public ResponseEntity<ResponseObject<String>> deleteUser(@PathVariable
                                             @ApiParam(value = "Mã ID User", example = "1")
                                                     Integer id) {
+        log.debug(PREFIX + "deleteUser => {}", JSONFactory.toString(id));
+
         return new ResponseEntity<>(this.userService.deleteUser(id), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Get list user", response = UserResDTO.class, responseContainer = "List")
+    @ApiResponses({
+            @ApiResponse(code = 500, message = "Server Error")
+    })
+    @GetMapping("")
+    public ResponseEntity<ResponseObject<List<UserResDTO>>> getListUser() {
+        log.debug(PREFIX + "getListUser =>");
+
+        return new ResponseEntity<>(this.userService.listAllUser(), HttpStatus.OK);
     }
 }

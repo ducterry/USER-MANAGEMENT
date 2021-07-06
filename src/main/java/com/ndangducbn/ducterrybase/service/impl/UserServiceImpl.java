@@ -4,6 +4,7 @@ import com.ndangducbn.ducterrybase.Repository.UserRepository;
 import com.ndangducbn.ducterrybase.common.constant.define.ResponseObject;
 import com.ndangducbn.ducterrybase.common.constant.define.ResponseStatus;
 import com.ndangducbn.ducterrybase.entity.User;
+import com.ndangducbn.ducterrybase.helper.Convert2DTO;
 import com.ndangducbn.ducterrybase.helper.UserValidation;
 import com.ndangducbn.ducterrybase.model.request.UpdateUserRequest;
 import com.ndangducbn.ducterrybase.model.response.UserResDTO;
@@ -13,6 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @Slf4j
 public class UserServiceImpl implements UserService {
@@ -20,11 +23,13 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserValidation userValidation;
+    private final Convert2DTO convert2DTO;
     private final ModelMapper modelMapper;
 
-    public UserServiceImpl(UserRepository userRepository, UserValidation userValidation, ModelMapper modelMapper) {
+    public UserServiceImpl(UserRepository userRepository, UserValidation userValidation, Convert2DTO convert2DTO, ModelMapper modelMapper) {
         this.userRepository = userRepository;
         this.userValidation = userValidation;
+        this.convert2DTO = convert2DTO;
         this.modelMapper = modelMapper;
     }
 
@@ -84,6 +89,24 @@ public class UserServiceImpl implements UserService {
             this.userRepository.delete(userCurrent);
 
             return new ResponseObject<>(true, ResponseStatus.DO_SERVICE_SUCCESSFUL, "Xóa User thành công");
+        } catch (Exception e) {
+            log.error(PREFIX + "userSignup Exception =>{}", JSONFactory.toString(e.getMessage()));
+            return new ResponseObject<>(false, ResponseStatus.UNHANDLED_ERROR, e.getMessage());
+        }
+    }
+
+    @Override
+    public ResponseObject<List<UserResDTO>> listAllUser() {
+        try {
+            log.error(PREFIX + "listAllUser =>");
+
+            // 01. Validation Request
+            List<User> userList = this.userRepository.findAll();
+
+            // 02. Mapping DTO
+            List<UserResDTO> resDTOS = this.convert2DTO.convertLstEntityToLstDTO(userList);
+
+            return new ResponseObject<>(true, ResponseStatus.DO_SERVICE_SUCCESSFUL, resDTOS);
         } catch (Exception e) {
             log.error(PREFIX + "userSignup Exception =>{}", JSONFactory.toString(e.getMessage()));
             return new ResponseObject<>(false, ResponseStatus.UNHANDLED_ERROR, e.getMessage());
