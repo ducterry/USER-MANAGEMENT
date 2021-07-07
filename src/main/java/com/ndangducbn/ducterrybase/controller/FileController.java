@@ -1,5 +1,6 @@
 package com.ndangducbn.ducterrybase.controller;
 
+import com.ndangducbn.ducterrybase.common.constant.PathConstant;
 import com.ndangducbn.ducterrybase.exception.NotFoundException;
 import com.ndangducbn.ducterrybase.model.request.UploadFile;
 import io.swagger.annotations.Api;
@@ -25,7 +26,6 @@ import java.net.MalformedURLException;
 @Slf4j
 public class FileController {
     private final String PREFIX = "UserServiceImpl_";
-    public static final String UPLOAD_DIR = "./ducterry-base/report_out/";
 
 
     @ApiOperation(value = "Upload file", response = String.class)
@@ -38,7 +38,7 @@ public class FileController {
         /*
             - Create folder to save file if not exist
          */
-        File uploadDir = new File(UPLOAD_DIR);
+        File uploadDir = new File(PathConstant.UPLOAD_FILE_PATH_SAVED);
         if (!uploadDir.exists()) {
             uploadDir.mkdirs();
         }
@@ -50,7 +50,7 @@ public class FileController {
                 /*
                     - Create file
                  */
-                File serverFile = new File(UPLOAD_DIR + "/" + name);
+                File serverFile = new File(PathConstant.UPLOAD_FILE_PATH_SAVED + "/" + name);
                 BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(serverFile));
                 stream.write(fileData.getBytes());
                 stream.close();
@@ -68,7 +68,7 @@ public class FileController {
     })
     @GetMapping("/file/{filename}")
     public ResponseEntity<?> download(@PathVariable String filename) {
-        File file = new File(UPLOAD_DIR + "/" + filename);
+        File file = new File(PathConstant.UPLOAD_FILE_PATH_SAVED + "/" + filename);
         if (!file.exists()) {
             throw new NotFoundException("File not found");
         }
