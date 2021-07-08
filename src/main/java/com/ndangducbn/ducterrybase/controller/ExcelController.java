@@ -1,6 +1,6 @@
 package com.ndangducbn.ducterrybase.controller;
 
-import com.ndangducbn.ducterrybase.service.ExportService;
+import com.ndangducbn.ducterrybase.service.ExcelService;
 import com.ndangducbn.ducterrybase.utils.FileUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -28,11 +28,11 @@ import java.io.FileNotFoundException;
 public class ExcelController {
     private final String PREFIX = "ExcelController_";
 
-    private final ExportService exportService;
+    private final ExcelService excelService;
     private final ServletContext servletContext;
 
-    public ExcelController(ExportService exportService, ServletContext servletContext) {
-        this.exportService = exportService;
+    public ExcelController(ExcelService excelService, ServletContext servletContext) {
+        this.excelService = excelService;
         this.servletContext = servletContext;
     }
 
@@ -46,7 +46,32 @@ public class ExcelController {
         log.debug(PREFIX + "exportUserToExcel =>");
 
 
-        String path = this.exportService.exportUserToExcel();
+        String path = this.excelService.exportUserToExcel();
+        File file = FileUtils.getFile(path);
+        MediaType mediaType = FileUtil.getMediaTypeForFileName(this.servletContext, file.getName());
+        InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
+        return ResponseEntity.ok()
+                // Content-Disposition
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + file.getName())
+                // Content-Type
+                .contentType(mediaType)
+                // Contet-Length
+                .contentLength(file.length()) //
+                .body(resource);
+    }
+
+
+    @ApiOperation(value = "Download Templates Excel", response = String.class)
+    @ApiResponses({
+            @ApiResponse(code = 404, message = "No user found"),
+            @ApiResponse(code = 500, message = "Server Error")
+    })
+    @GetMapping("/excel/templates")
+    public ResponseEntity<?> templatesExel() throws FileNotFoundException {
+        log.debug(PREFIX + "templatesExel =>");
+
+
+        String path = this.excelService.downloadTemplates();
         File file = FileUtils.getFile(path);
         MediaType mediaType = FileUtil.getMediaTypeForFileName(this.servletContext, file.getName());
         InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
