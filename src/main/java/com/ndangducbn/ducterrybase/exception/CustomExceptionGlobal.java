@@ -16,6 +16,17 @@ import org.springframework.web.context.request.WebRequest;
 public class CustomExceptionGlobal {
     private final String PREFIX = "CustomExceptionGlobal_";
 
+    /*
+        API Exception
+    */
+    @ExceptionHandler
+    @org.springframework.web.bind.annotation.ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    ResponseObject<String> apiExceptionHandle(ApiException e) {
+        log.error(PREFIX + "apiExceptionHandle => {}", JSONFactory.toString(e));
+
+        return new ResponseObject<>(false, e.getErrorStatus(),e.getMessage());
+    }
 
     /*
         User Exception

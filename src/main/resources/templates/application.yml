@@ -1,5 +1,5 @@
-amazonProperties:
-  endpointUrl: https://s3.us-east-2.amazonaws.com
-  accessKey: AKIAV77SZE3GAMVY5S7U
-  secretKey: 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
-  bucketName: ducterry-ver01
+#amazonProperties:
+#  endpointUrl: https://s3.us-east-2.amazonaws.com
+#  accessKey: AKIAV77SZE3GAMVY5S7U
+#  secretKey: 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
+#  bucketName: ducterry-ver01
